@@ -6,11 +6,8 @@
 ![Status](https://img.shields.io/badge/Status-Complete-success.svg)
 ![DL](https://img.shields.io/badge/DL-Regression-red.svg)
 
-A regression project predicting hotel review scores using a hybrid BiLSTM-MLP architecture that combines textual reviews with structured hotel and reviewer metadata. Developed as part of the Machine Learning, Artificial Neural Networks and Deep Learning course (June 2025 exam session) for the Bachelor in Artificial Intelligence at the University of Milan (UNIMI).
+A regression project predicting hotel review scores using a hybrid BiLSTM-MLP architecture that combines textual reviews with structured hotel and reviewer metadata. Developed as part of the Machine Learning, Artificial Neural Networks and Deep Learning course (June 2025 exam session) for the Bachelor in Artificial Intelligence at the University of Pavia, University of Milano, University of Milano-Bicocca.
 
-<p align="center">
-  <img src="images/architecture_diagram.png" alt="Model Architecture" width="800"/>
-</p>
 
 ## 🎯 Project Overview
 
@@ -27,7 +24,7 @@ Hotel review analysis is crucial for the hospitality industry to understand cust
 
 ## 📊 Dataset
 
-**Source:** Course-provided dataset via [University of Milan](http://frasca.di.unimi.it/MLDNN/input_data.pkl)
+**Source:** Course-provided dataset via [GitHub](https://github.com/pdmdp/Deep-Learning-Hotel-Review-Regression-Project/blob/main/HotelReviewDataset.csv)
 
 The dataset contains hotel reviews from 13,772 visitors with comprehensive metadata:
 
@@ -188,21 +185,16 @@ Model: BiLSTM-MLP Hybrid
 ```
 hotel-review-prediction/
 │
-├── DiPilato_535298.ipynb         # Main implementation notebook
-├── requirements.txt               # Python dependencies
-├── README.md                      # Project documentation (this file)
-├── ARCHITECTURE.md                # Detailed technical documentation
-├── LICENSE                        # MIT License
-├── .gitignore                     # Git ignore rules
+├── Deep-Learning-Hotel-Review-Regression-Project.ipynb        # Main implementation notebook
+├── requirements.txt                                           # Python dependencies
+├── README.md                                                  # Project documentation (this file)
+├── ARCHITECTURE.md                                            # Detailed technical documentation
+├── LICENSE                                                    # MIT License
+├── .gitignore                                                 # Git ignore rules
 │
-├── docs/                          # Supporting documents
-│   ├── exam_test.pdf              # Original exam assignment
-│   └── EXAM_DL.pdf                # Written exam answers
-│
-└── images/                        # Visualizations (optional)
-    ├── architecture_diagram.png
-    ├── training_history.png
-    └── predictions_scatter.png
+├── docs/                                                      # Supporting documents
+│   ├── exam_test.pdf                                          # Original exam assignment
+│   └── EXAM_DL.pdf                                            # Written exam answers
 ```
 
 ## 🔍 Key Features
@@ -257,12 +249,11 @@ This project demonstrates proficiency in:
 - Hyperparameter optimization strategies
 - Model evaluation for regression tasks
 
-**Course:** 509486 - Machine Learning, Artificial Neural Networks and Deep Learning  
+**Course:** Machine Learning, Artificial Neural Networks and Deep Learning  
 **Exam Session:** June 19, 2025  
 **Academic Year:** 2024/2025  
-**Institution:** University of Milan (UNIMI)  
-**Degree Program:** [L-31] Bachelor in Artificial Intelligence  
-**Student ID:** 535298
+**Institution:** University of Pavia, University of Milano, University of Milano-Bicocca  
+**Degree Program:** [L-31] Bachelor in Artificial Intelligence
 
 ## 📝 Implementation Notes
 
