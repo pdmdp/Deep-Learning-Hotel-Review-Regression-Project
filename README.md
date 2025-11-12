@@ -316,25 +316,6 @@ The implementation includes several improvements over the original written exam 
 
 All changes are thoroughly documented in the notebook with clear explanations.
 
-## 🔮 Future Improvements
-
-### Short-term
-- [ ] Implement attention mechanism for interpretable word importance
-- [ ] Add early stopping and learning rate scheduling
-- [ ] Experiment with pre-trained embeddings (Word2Vec, GloVe)
-- [ ] Visualize embedding space with t-SNE/UMAP
-
-### Medium-term
-- [ ] Try transformer-based models (BERT, RoBERTa)
-- [ ] Explore ensemble methods (multiple BiLSTM models)
-- [ ] Add review sentiment as auxiliary task (multi-task learning)
-- [ ] Implement model explainability (LIME, SHAP)
-
-### Long-term
-- [ ] Develop web application for real-time prediction (Streamlit/Flask)
-- [ ] Multi-language support with multilingual embeddings
-- [ ] Aspect-based sentiment analysis (room, service, location scores)
-- [ ] Integrate with hotel booking platforms
 
 ## 📚 References
 
@@ -349,13 +330,9 @@ All changes are thoroughly documented in the notebook with clear explanations.
 
 **Matteo Di Pilato**  
 Bachelor in Artificial Intelligence  
-University of Milan (UNIMI)  
-Student ID: 535298  
+University of Milano, University of Milano-Bicocca, University of Pavia
 Academic Year 2024/2025
 
-📧 Contact: [Your email if you want to add it]  
-🔗 GitHub: [pdmdp](https://github.com/pdmdp)  
-🔗 LinkedIn: [Your LinkedIn if you want to add it]
 
 ## 📄 License
 
@@ -376,7 +353,7 @@ This project is available under the MIT License. See [LICENSE](LICENSE) file for
 <p align="center">
   ⭐ If you found this project helpful, please consider giving it a star!<br>
   💡 Feel free to fork and adapt for your own learning<br>
-  📚 Check out my other ML projects: <a href="https://github.com/pdmdp/student-depression-project">Student Depression Prediction</a>
+  📚 Check out my other ML project: <a href="https://github.com/pdmdp/student-depression-project">Student Depression Prediction</a>
 </p>
 
 ---
