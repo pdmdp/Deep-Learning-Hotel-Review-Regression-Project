@@ -182,42 +182,6 @@ Model: BiLSTM-MLP Hybrid
 - Errors typically within ±2 points
 - Most predictions fall within acceptable range for practical use
 
-## 🚀 Installation & Usage
-
-### Prerequisites
-```bash
-Python 3.8 or higher
-TensorFlow 2.8+
-```
-
-### Quick Start
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/yourusername/hotel-review-prediction.git
-cd hotel-review-prediction
-```
-
-2. **Install dependencies:**
-```bash
-pip install -r requirements.txt
-```
-
-3. **Download the dataset:**
-```bash
-wget http://frasca.di.unimi.it/MLDNN/input_data.pkl
-```
-
-4. **Run the notebook:**
-```bash
-jupyter notebook DiPilato_535298.ipynb
-```
-
-### Alternative: Google Colab
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yourusername/hotel-review-prediction/blob/main/DiPilato_535298.ipynb)
-
-The notebook automatically downloads the dataset in the first cell.
 
 ## 📁 Project Structure
 
