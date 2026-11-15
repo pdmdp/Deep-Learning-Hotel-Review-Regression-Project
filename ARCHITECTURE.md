@@ -34,3 +34,10 @@ The final configuration follows the `best_params` output and the `create_model` 
 The loss is mean squared error on scores divided by ten. The search samples five configurations from 24 combinations using Python seed 42. Each receives two-fold validation and two epochs per fold. Final training uses the selected configuration for two epochs with validation monitoring, followed by evaluation on the held-out test set. Adam uses a learning rate of 0.0001 and batches of 64.
 
 The TensorFlow and NumPy seeds are set to 42. Seeds alone do not guarantee identical results across TensorFlow versions, hardware and numerical kernels. The original environment and trained weights were not archived.
+
+## Evaluation limits
+
+
+The preprocessing is fitted on the outer training split before the inner two-fold search, so it is shared across those folds. The final validation and test sets are excluded from fitting the vocabulary, encoder and scaler. A stricter search would fit these transformations separately inside each fold.
+
+The split is random by review: it does not test transfer to unseen hotels or future dates. Padding and unknown words share index zero, and the embedding does not mask padding. The two-epoch search is small; the project does not establish that this architecture outperforms CNNs, pretrained language models or a tuned text-regression baseline.

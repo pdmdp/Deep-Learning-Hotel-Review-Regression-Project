@@ -24,7 +24,7 @@ The 13,772-row course dataset is split into **9,640 training**, **2,066 validati
 - **Selection:** five sampled configurations, two-fold cross-validation and two training epochs per configuration.
 - **Selected model:** 150-dimensional embeddings, 16 LSTM units per direction, a 64-unit sigmoid dense layer, dropout 0.2, batch normalization and a sigmoid output. Adam learning rate: 0.0001.
 
-The displayed model summary in the notebook is for the initial default architecture (50-dimensional embeddings and 64 LSTM units), not the selected model. [ARCHITECTURE.md](ARCHITECTURE.md) distinguishes the two.
+The notebook displays the initial model summary; [ARCHITECTURE.md](ARCHITECTURE.md) distinguishes it from the selected network.
 
 ## Run
 
@@ -46,11 +46,9 @@ python scripts/evaluate_baseline.py
 
 This also regenerates the figure and machine-readable comparison. The baseline was verified with Python 3.14.4 and the versions in `requirements-baseline.txt`.
 
-## Limits
+## Evaluation scope
 
-The preprocessing is fitted on the outer training split before the inner two-fold search, so it is shared across those folds. The final validation and test sets are excluded from fitting the vocabulary, encoder and scaler. A stricter search would fit these transformations separately inside each fold.
-
-The split is random by review: it does not test transfer to unseen hotels or future dates. Padding and unknown words share index zero, and the embedding does not mask padding. The two-epoch search is small; the project does not establish that this architecture outperforms CNNs, pretrained language models or a tuned text-regression baseline.
+This random review split does not test unseen hotels or future dates. Preprocessing is fitted before the inner cross-validation search, and padding shares an unmasked index with unknown words. The two-epoch search is small; [method notes](ARCHITECTURE.md#evaluation-limits) describe these limitations.
 
 ## Author and source
 
