@@ -1,316 +1,59 @@
-# Hotel Review Score Prediction Using Deep Learning
+# Hotel review score regression
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.8+-orange.svg)
-![License](https://img.shields.io/badge/License-Academic-green.svg)
-![Status](https://img.shields.io/badge/Status-Complete-success.svg)
-![DL](https://img.shields.io/badge/DL-Regression-red.svg)
+A dual-input neural network that predicts review scores from review text and hotel/reviewer metadata. The text branch uses a learned embedding and a bidirectional LSTM; its output is combined with structured features in a small dense network.
 
-A regression project predicting hotel review scores using a hybrid BiLSTM-MLP architecture that combines textual reviews with structured hotel and reviewer metadata. Developed as part of the Machine Learning, Artificial Neural Networks and Deep Learning course (June 2025 exam session) for the Bachelor in Artificial Intelligence at the University of Pavia, University of Milano, University of Milano-Bicocca.
+[Notebook](Deep-Learning-Hotel-Review-Regression-Project.ipynb) · [Architecture](ARCHITECTURE.md) · [Written design](docs/EXAM_DL.pdf)
 
+## Results
 
-## 🎯 Project Overview
+![Test RMSE of the recorded neural model and a recomputed training-mean baseline](assets/test-comparison.png)
 
-Hotel review analysis is crucial for the hospitality industry to understand customer satisfaction and improve service quality. This project employs deep learning techniques to predict numerical review scores from both textual content and structured features, enabling automated quality assessment.
+| Model | MSE on normalized target | RMSE in score points |
+| :--- | ---: | ---: |
+| Training-mean baseline, computed November 2026 | 0.04226 | 2.056 |
+| BiLSTM + structured features, recorded coursework run | 0.0331 | approximately 1.819 |
 
-**Objective:** Build a robust regression model capable of predicting hotel review scores on a 0-10 scale using multi-modal input data (text + structured features).
+The neural result is the saved June 2025 notebook output. Its MSE was printed to four decimal places; the original-scale RMSE is calculated as `10 × sqrt(MSE)`. The baseline uses the same split and only the training mean. The neural model was not retrained for this comparison, and model weights were not saved. [Values, split sizes and data checksum](results/comparison.json) are included.
 
-### 🏆 Key Achievements
+## Model and experiment
 
-- **Test MSE:** 0.0331 (normalized scale) ≈ **1.82 point error** on 0-10 scale
-- **Hybrid architecture** combining BiLSTM for text and MLP for structured features
-- **Systematic hyperparameter tuning** with K-Fold cross-validation
-- **Comprehensive preprocessing** pipeline for text and multi-type features
+The 13,772-row course dataset is split into **9,640 training**, **2,066 validation** and **2,066 test** reviews with seed 42. Review scores are divided by ten during training.
 
-## 📊 Dataset
+- **Text:** punctuation removal, lowercase alphabetic tokens, training vocabulary, and sequences padded/truncated to 100 tokens.
+- **Structured data:** one-hot hotel names and five scaled numerical/date features. `Review_Type` is excluded because it is directly related to the target.
+- **Selection:** five sampled configurations, two-fold cross-validation and two training epochs per configuration.
+- **Selected model:** 150-dimensional embeddings, 16 LSTM units per direction, a 64-unit sigmoid dense layer, dropout 0.2, batch normalization and a sigmoid output. Adam learning rate: 0.0001.
 
-**Source:** Course-provided dataset via [GitHub](https://github.com/pdmdp/Deep-Learning-Hotel-Review-Regression-Project/blob/main/HotelReviewDataset.csv)
+The displayed model summary in the notebook is for the initial default architecture (50-dimensional embeddings and 64 LSTM units), not the selected model. [ARCHITECTURE.md](ARCHITECTURE.md) distinguishes the two.
 
-The dataset contains hotel reviews from 13,772 visitors with comprehensive metadata:
+## Run
 
-### Features
-- **Textual:** Review text (up to 400 words)
-- **Hotel Information:** Hotel Name, Hotel Address, Total Reviews for Hotel
-- **Reviewer Information:** Reviewer Nationality, Total Reviews by Reviewer
-- **Temporal:** Review Date (month/day/year format)
-- **Ratings:** Review Score (2.5-10 range, float), Review Type (Good/Bad)
-
-### Target Variable
-- **Review_Score:** Continuous regression (float in [0, 10] range)
-
-### Dataset Statistics
-- **Total Samples:** 13,772 hotel reviews
-- **Features Used:** 6 (after preprocessing)
-- **Unique Hotels:** 1,298
-- **Vocabulary Size:** 9,639 unique words
-- **Score Range:** 2.5 - 10.0
-
-## 🔧 Methodology
-
-### 1. Data Preprocessing
-
-**Feature Engineering:**
-- **Retained features:** `Hotel_Name`, `Review_Date`, `Hotel_number_reviews`, `Reviewer_number_reviews`, `Review`, `Review_Score`
-- **Dropped features:** `Hotel_Address`, `Reviewer_Nationality`, `Review_Type`, `Average_Score`
-- **Date decomposition:** Split `Review_Date` into `Day`, `Month`, `Year` as separate integer features
-- **Target normalization:** Scaled `Review_Score` from [0,10] to [0,1] for sigmoid output
-
-**Rationale for Feature Selection:**
-- `Hotel_Address` and `Reviewer_Nationality` considered irrelevant for prediction
-- `Review_Type` excluded to avoid target leakage (directly correlates with score)
-- `Average_Score` not part of original assignment features
-
-**Missing Data Handling:**
-- Dataset contained no missing values after feature selection
-- All 13,772 samples retained for modeling
-
-### 2. Feature Transformation Pipeline
-
-Created specialized preprocessing for different feature types:
-
-| Feature Type | Transformation | Applied To |
-|--------------|----------------|------------|
-| Text | Tokenization, Lowercasing, Punctuation Removal, Padding | Review |
-| Categorical (High-cardinality) | One-Hot Encoding | Hotel_Name |
-| Numerical | MinMax Scaling [0,1] | Reviewer_number_reviews, Hotel_number_reviews |
-| Temporal | Split + MinMax Scaling | Day, Month, Year |
-
-**Text Preprocessing Details:**
-```python
-1. Tokenization by whitespace
-2. Lowercase conversion
-3. Punctuation removal
-4. Non-alphabetic token filtering
-5. Vocabulary construction (9,639 words)
-6. Sequence padding to length 100
-7. Unknown word handling with <UNK> token (index 0)
+```bash
+git clone https://github.com/pdmdp/Deep-Learning-Hotel-Review-Regression-Project.git
+cd Deep-Learning-Hotel-Review-Regression-Project
+python -m pip install -r requirements.txt
+python -m jupyter lab Deep-Learning-Hotel-Review-Regression-Project.ipynb
 ```
 
-### 3. Model Selection & Optimization
+The notebook loads the included CSV directly. Run it from the repository root. Neural training requires a compatible TensorFlow environment; the original run used Colab, and its exact package versions were not retained. `requirements.txt` is a dependency list, not a verified historical lockfile.
 
-**Approach:** Manual Randomized Search with K-Fold Cross-Validation
+The baseline runs independently of TensorFlow:
 
-**Architecture Selection Rationale:**
-
-| Architecture | Pros | Cons | Decision |
-|--------------|------|------|----------|
-| **BiLSTM + MLP** ⭐ | Sequential text understanding, bidirectional context, fuses multi-modal data | More parameters, slower training | **Selected** - Optimal for text+structured data |
-| Unidirectional LSTM | Fewer parameters, faster | Only forward context | Inferior - Limited context |
-| CNN | Fast, parallel processing | Local patterns only, weak on long dependencies | Not suitable - Reviews need full context |
-| MLP only | Simplest, fastest | No sequential understanding | Not suitable - Ignores word order |
-
-**Hyperparameter Search:**
-- **Search space:** 24 total combinations
-- **Sampled:** 5 random configurations
-- **CV strategy:** 2-fold for efficiency
-- **Evaluation metric:** Mean Squared Error (MSE)
-- **Primary metric:** F1 score → MSE (regression task)
-
-**Why Not GridSearchCV?**
-- KerasRegressor incompatibility with multi-input models (text + structured)
-- Scikit-learn wrappers don't support Keras functional API with multiple inputs
-- Manual implementation provides better control and flexibility
-
-### 4. Final Model Architecture
-
-```python
-Model: BiLSTM-MLP Hybrid
-├── Text Input Branch (100,)
-│   ├── Embedding Layer (vocab_size=9640, dim=150)
-│   ├── Bidirectional LSTM (64 units × 2 = 128 output)
-│   └── Output: (None, 128)
-│
-├── Structured Input Branch (1303,)
-│   ├── Hotel_Name (One-Hot): 1298 features
-│   ├── Numerical Features (Scaled): 5 features
-│   └── Output: (None, 1303)
-│
-├── Fusion Layer
-│   ├── Concatenate: [BiLSTM, Structured] → (None, 1431)
-│   ├── Dense(64, activation='sigmoid')
-│   ├── Dropout(0.2)
-│   ├── Batch Normalization
-│   └── Dense(1, activation='sigmoid') → [0,1]
-│
-└── Output: Rescaled to [0,10]
+```bash
+python -m pip install -r requirements-baseline.txt
+python scripts/evaluate_baseline.py
 ```
 
-**Optimal Hyperparameters:**
-- Embedding dimension: 150
-- LSTM units: 16 (per direction)
-- Dropout rate: 0.2
-- Learning rate: 0.0001
-- Batch size: 64
-- Optimizer: Adam
-- Loss function: Mean Squared Error (MSE)
+This also regenerates the figure and machine-readable comparison. The baseline was verified with Python 3.14.4 and the versions in `requirements-baseline.txt`.
 
-## 📈 Results
+## Limits
 
-### Model Performance
+The preprocessing is fitted on the outer training split before the inner two-fold search, so it is shared across those folds. The final validation and test sets are excluded from fitting the vocabulary, encoder and scaler. A stricter search would fit these transformations separately inside each fold.
 
-| Metric | Test Set Score | Description |
-|--------|----------------|-------------|
-| **Test MSE (normalized)** | **0.0331** | Mean squared error on [0,1] scale |
-| **Test MSE (original)** | **~3.31** | Mean squared error on [0,10] scale |
-| **RMSE** | **~1.82** | Root mean squared error (average error in points) |
-| **Total Parameters** | 632,849 | Model complexity (2.41 MB) |
-| **Training Time** | ~20-25s/epoch | On GPU (Google Colab) |
+The split is random by review: it does not test transfer to unseen hotels or future dates. Padding and unknown words share index zero, and the embedding does not mask padding. The two-epoch search is small; the project does not establish that this architecture outperforms CNNs, pretrained language models or a tuned text-regression baseline.
 
-### Performance Insights
+## Author and source
 
-**Learning Behavior:**
-- Epoch 1: Training MSE ~0.15, Validation MSE ~0.05
-- Epoch 2: Training MSE ~0.12, Validation MSE ~0.03
-- Consistent improvement across epochs
-- Low gap between train and validation indicates good generalization
+**Matteo Pietro Di Pilato** · Deep Learning coursework, June 2025, BSc in Artificial Intelligence (Universities of Pavia, Milan and Milano-Bicocca).
 
-**Prediction Examples:**
-| Actual Score | Predicted Score | Error |
-|--------------|-----------------|-------|
-| 7.1 | 7.8 | +0.7 |
-| 6.3 | 8.3 | +2.0 |
-| 5.8 | 8.4 | +2.6 |
-| 4.2 | 4.7 | +0.5 |
-| 2.5 | 4.1 | +1.6 |
-
-**Key Observations:**
-- Model performs well on extreme scores (very low/high)
-- Some tendency to predict slightly higher than actual (positive bias)
-- Errors typically within ±2 points
-- Most predictions fall within acceptable range for practical use
-
-
-## 📁 Project Structure
-
-```
-hotel-review-prediction/
-│
-├── Deep-Learning-Hotel-Review-Regression-Project.ipynb        # Main implementation notebook
-├── requirements.txt                                           # Python dependencies
-├── README.md                                                  # Project documentation (this file)
-├── ARCHITECTURE.md                                            # Detailed technical documentation
-├── LICENSE                                                    # MIT License
-├── .gitignore                                                 # Git ignore rules
-│
-├── docs/                                                      # Supporting documents
-│   ├── exam_test.pdf                                          # Original exam assignment
-│   └── EXAM_DL.pdf                                            # Written exam answers
-```
-
-## 🔍 Key Features
-
-✅ **Multi-modal learning** combining text and structured features  
-✅ **Bidirectional LSTM** for comprehensive text understanding  
-✅ **Custom preprocessing pipeline** for diverse feature types  
-✅ **Robust vocabulary construction** with unknown token handling  
-✅ **Systematic hyperparameter optimization** via randomized search  
-✅ **Dual-input architecture** using Keras functional API  
-✅ **Reproducible results** with fixed random seeds (seed=42)
-
-## 🧪 Technical Highlights
-
-### Preprocessing Innovation
-- **Vocabulary construction:** Built from training data only (9,639 unique words)
-- **Unknown token handling:** Reserved index 0 for `<UNK>` to handle unseen words gracefully
-- **Sequence padding:** Fixed length of 100 tokens with post-padding strategy
-- **One-hot encoding:** Handled 1,298 unique hotels without dimensionality explosion (via sparse representation)
-
-### Architecture Design Decisions
-
-**Why BiLSTM?**
-1. ✅ Captures sequential dependencies in reviews
-2. ✅ Bidirectional processing provides richer context
-3. ✅ Proven effectiveness for sentiment and rating prediction
-4. ✅ Better than CNN for long-range dependencies in text
-
-**Why Sigmoid in Hidden Layer?**
-- Originally proposed in written exam for consistency
-- Alternative: ReLU (faster, avoids vanishing gradients) - potential future improvement
-
-**Why Single MLP Layer?**
-- BiLSTM handles most feature learning
-- MLP primarily fuses representations
-- Regularization (dropout + batch norm) prevents overfitting
-
-### Validation Strategy
-- **Data split:** 70% train / 15% validation / 15% test
-- **K-Fold CV:** 2-fold during hyperparameter search
-- **Stratification:** Not applicable (regression task)
-- **Multiple metrics:** MSE, RMSE for comprehensive evaluation
-
-## 🎓 Academic Context
-
-This project demonstrates proficiency in:
-- Multi-modal deep learning architecture design
-- Text preprocessing and embedding techniques
-- Bidirectional RNN (BiLSTM) implementation
-- Hybrid model construction with Keras functional API
-- Handling mixed data types (text + categorical + numerical)
-- Hyperparameter optimization strategies
-- Model evaluation for regression tasks
-
-**Course:** Machine Learning, Artificial Neural Networks and Deep Learning  
-**Exam Session:** June 19, 2025  
-**Academic Year:** 2024/2025  
-**Institution:** University of Pavia, University of Milano, University of Milano-Bicocca  
-**Degree Program:** [L-31] Bachelor in Artificial Intelligence
-
-## 📝 Implementation Notes
-
-### Changes from Written Proposal
-
-The implementation includes several improvements over the original written exam answers:
-
-| Written Proposal | Implementation | Rationale |
-|------------------|----------------|-----------|
-| Label Encoding for Hotel_Name | **One-Hot Encoding** | Avoids artificial ordinal relationships between hotels |
-| No unknown token handling | **`<UNK>` token at index 0** | Robust handling of words not seen during training |
-| Implicit sequence handling | **Explicit padding to length 100** | Required for uniform input shape to neural network |
-| GridSearchCV | **Manual randomized search with K-Fold** | KerasRegressor incompatibility with multi-input models |
-| Basic tokenization | **+ Non-alphabetic filtering** | Reduces vocabulary noise by removing numbers, dates |
-
-All changes are thoroughly documented in the notebook with clear explanations.
-
-
-## 📚 References
-
-1. Dataset: Course materials - University of Milan, Department of Computer Science
-2. [Keras Documentation](https://keras.io/) - Neural network implementation
-3. [TensorFlow Guide](https://www.tensorflow.org/) - Deep learning framework
-4. [scikit-learn](https://scikit-learn.org/) - Preprocessing utilities
-5. Hochreiter & Schmidhuber (1997) - Long Short-Term Memory networks
-6. Schuster & Paliwal (1997) - Bidirectional Recurrent Neural Networks
-
-## 👨‍💻 Author
-
-**Matteo Di Pilato**  
-Bachelor in Artificial Intelligence  
-University of Milano, University of Milano-Bicocca, University of Pavia
-Academic Year 2024/2025
-
-
-## 📄 License
-
-This project is available under the MIT License. See [LICENSE](LICENSE) file for details.
-
-**Academic Use:** This project was developed for academic purposes as part of the Machine Learning, Artificial Neural Networks and Deep Learning course exam at the University of Milan.
-
-## 🙏 Acknowledgments
-
-- **Dataset:** University of Milan, Department of Computer Science
-- **Course Instructors:** ML, ANN, and Deep Learning teaching team
-- **Institution:** University of Milan (UNIMI)
-- **Libraries:** TensorFlow/Keras, scikit-learn, NumPy, Pandas communities
-- **Inspiration:** Previous ML projects and course materials
-
----
-
-<p align="center">
-  ⭐ If you found this project helpful, please consider giving it a star!<br>
-  💡 Feel free to fork and adapt for your own learning<br>
-  📚 Check out my other ML project: <a href="https://github.com/pdmdp/student-depression-project">Student Depression Prediction</a>
-</p>
-
----
-
-**Note:** This is an educational project. The model demonstrates deep learning concepts and should not be used for commercial hotel rating systems without further validation and ethical considerations.
+The dataset was supplied with the course assignment. The [MIT license](LICENSE) covers the project code; course materials and source data retain their own terms.

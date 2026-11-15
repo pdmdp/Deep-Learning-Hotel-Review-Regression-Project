@@ -1,0 +1,22 @@
+{
+  "baseline_provenance": "Training-mean baseline computed on 2026-11-15 using the original split.",
+  "neural_provenance": "Saved June 2025 notebook output; not retrained in this update. MSE was printed to four decimal places.",
+  "dataset_sha256": "d48c1d8741ce3adc97c974654bea5f1bec83a69150451a2168342f6a91e9240b",
+  "split": {
+    "train": 9640,
+    "validation": 2066,
+    "test": 2066,
+    "seed": 42
+  },
+  "training_mean": 7.2369709543568455,
+  "baseline": {
+    "normalized_mse": 0.042261406842778716,
+    "mse": 4.226140684277872,
+    "rmse": 2.055757934261199
+  },
+  "recorded_neural": {
+    "normalized_mse": 0.0331,
+    "mse": 3.3099999999999996,
+    "rmse": 1.8193405398660252
+  }
+}
