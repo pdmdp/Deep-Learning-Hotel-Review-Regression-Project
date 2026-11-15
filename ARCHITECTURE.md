@@ -41,3 +41,9 @@ The TensorFlow and NumPy seeds are set to 42. Seeds alone do not guarantee ident
 The preprocessing is fitted on the outer training split before the inner two-fold search, so it is shared across those folds. The final validation and test sets are excluded from fitting the vocabulary, encoder and scaler. A stricter search would fit these transformations separately inside each fold.
 
 The split is random by review: it does not test transfer to unseen hotels or future dates. Padding and unknown words share index zero, and the embedding does not mask padding. The two-epoch search is small; the project does not establish that this architecture outperforms CNNs, pretrained language models or a tuned text-regression baseline.
+
+## Reproduction notes
+
+The saved neural output comes from the June 2025 coursework run. Its printed MSE has four decimal places; the README converts it to original-scale RMSE as `10 × sqrt(MSE)`. The training-mean baseline was recomputed in November 2026 using the same split, without retraining the neural model. [The comparison record](results/comparison.json) retains the split sizes, data checksum and measured baseline.
+
+The original notebook used Colab. Its exact TensorFlow environment and trained weights were not retained; `requirements.txt` is a dependency list rather than a verified historical lockfile. The independent baseline was checked with Python 3.14.4 and `requirements-baseline.txt`. The notebook's initial model summary is not the selected final network; the table above distinguishes them.

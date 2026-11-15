@@ -1,30 +1,41 @@
 # Hotel review score regression
 
-A dual-input neural network that predicts review scores from review text and hotel/reviewer metadata. The text branch uses a learned embedding and a bidirectional LSTM; its output is combined with structured features in a small dense network.
+This project predicts hotel review scores from review text and hotel/reviewer metadata. A bidirectional LSTM reads the text, a second branch supplies structured features, and their combined prediction is compared with a training-mean baseline.
 
-[Notebook](Deep-Learning-Hotel-Review-Regression-Project.ipynb) · [Architecture](ARCHITECTURE.md) · [Written design](docs/EXAM_DL.pdf)
+The recorded neural model has an RMSE of **approximately 1.819 score points**, compared with **2.056** for always predicting the training mean on the same split.
+
+[Notebook](Deep-Learning-Hotel-Review-Regression-Project.ipynb) · [Architecture and training](ARCHITECTURE.md) · [Project design](docs/EXAM_DL.pdf)
+
+## How the model uses both inputs
+
+The text branch learns word embeddings and reads each review in both directions. Its representation is concatenated with hotel indicators and scaled numerical/date features, then passed through a dense network to predict a score.
+
+The selected model uses 150-dimensional embeddings, 16 LSTM units per direction, a 64-unit dense layer, dropout and batch normalization. Review sequences are limited to 100 tokens. Scores are divided by ten during training and converted back for the RMSE comparison.
+
+The 13,772 reviews are split into 9,640 training, 2,066 validation and 2,066 test examples with seed 42. The search samples five configurations with two-fold cross-validation and two epochs per configuration. `Review_Type` is excluded because it is directly related to the target score.
 
 ## Results
 
-![Test RMSE of the recorded neural model and a recomputed training-mean baseline](assets/test-comparison.png)
+![Test error for the recorded neural model and the training-mean baseline](assets/test-comparison.png)
 
 | Model | MSE on normalized target | RMSE in score points |
 | :--- | ---: | ---: |
-| Training-mean baseline, computed November 2026 | 0.04226 | 2.056 |
-| BiLSTM + structured features, recorded coursework run | 0.0331 | approximately 1.819 |
+| Training-mean baseline | 0.04226 | 2.056 |
+| BiLSTM + structured features | 0.0331 | approximately 1.819 |
 
-The neural result is the saved June 2025 notebook output. Its MSE was printed to four decimal places; the original-scale RMSE is calculated as `10 × sqrt(MSE)`. The baseline uses the same split and only the training mean. The neural model was not retrained for this comparison, and model weights were not saved. [Values, split sizes and data checksum](results/comparison.json) are included.
+The neural score is a saved coursework result; the baseline was computed later using the same split and only the training mean. The neural MSE was printed to four decimal places, so its converted RMSE is approximate. [The comparison record](results/comparison.json) contains the values and split details.
 
-## Model and experiment
+The combined model improves on this simple baseline. The experiment does not isolate how much comes from text versus metadata; separate text-only and metadata-only models would answer that question.
 
-The 13,772-row course dataset is split into **9,640 training**, **2,066 validation** and **2,066 test** reviews with seed 42. Review scores are divided by ten during training.
+## Contribution
 
-- **Text:** punctuation removal, lowercase alphabetic tokens, training vocabulary, and sequences padded/truncated to 100 tokens.
-- **Structured data:** one-hot hotel names and five scaled numerical/date features. `Review_Type` is excluded because it is directly related to the target.
-- **Selection:** five sampled configurations, two-fold cross-validation and two training epochs per configuration.
-- **Selected model:** 150-dimensional embeddings, 16 LSTM units per direction, a 64-unit sigmoid dense layer, dropout 0.2, batch normalization and a sigmoid output. Adam learning rate: 0.0001.
+**Matteo Pietro Di Pilato** · Deep Learning coursework, BSc in Artificial Intelligence. The project implements the dual-input model, preprocessing, configuration search and evaluation.
 
-The notebook displays the initial model summary; [ARCHITECTURE.md](ARCHITECTURE.md) distinguishes it from the selected network.
+## Limits and next steps
+
+The random review split does not test unseen hotels or future dates. Preprocessing is shared across the inner validation folds, padding and unknown words use the same unmasked index, and the two-epoch search is small. The trained weights were not saved.
+
+The next comparison should fit preprocessing inside each search fold, add text-only and metadata-only baselines, and evaluate on a hotel-disjoint or chronological split. [Architecture notes](ARCHITECTURE.md#evaluation-limits) explain the current limitations.
 
 ## Run
 
@@ -35,23 +46,11 @@ python -m pip install -r requirements.txt
 python -m jupyter lab Deep-Learning-Hotel-Review-Regression-Project.ipynb
 ```
 
-The notebook loads the included CSV directly. Run it from the repository root. Neural training requires a compatible TensorFlow environment; the original run used Colab, and its exact package versions were not retained. `requirements.txt` is a dependency list, not a verified historical lockfile.
-
-The baseline runs independently of TensorFlow:
+The notebook loads the included course CSV and needs a compatible TensorFlow environment. To reproduce the baseline and figure without TensorFlow:
 
 ```bash
 python -m pip install -r requirements-baseline.txt
 python scripts/evaluate_baseline.py
 ```
 
-This also regenerates the figure and machine-readable comparison. The baseline was verified with Python 3.14.4 and the versions in `requirements-baseline.txt`.
-
-## Evaluation scope
-
-This random review split does not test unseen hotels or future dates. Preprocessing is fitted before the inner cross-validation search, and padding shares an unmasked index with unknown words. The two-epoch search is small; [method notes](ARCHITECTURE.md#evaluation-limits) describe these limitations.
-
-## Author and source
-
-**Matteo Pietro Di Pilato** · Deep Learning coursework, June 2025, BSc in Artificial Intelligence (Universities of Pavia, Milan and Milano-Bicocca).
-
-The dataset was supplied with the course assignment. The [MIT license](LICENSE) covers the project code; course materials and source data retain their own terms.
+[Reproduction notes](ARCHITECTURE.md#reproduction-notes) describe the available environment and saved results. The [MIT license](LICENSE) covers project code; course data and materials retain their own terms.
